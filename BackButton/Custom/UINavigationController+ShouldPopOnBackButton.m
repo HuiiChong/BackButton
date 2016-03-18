@@ -34,28 +34,28 @@ static void *CurrentVC = &CurrentVC;
 {
     BOOL shouldPop = YES;
     UIViewController *vc = self.topViewController;
-//    NSLog(@"title: %@, %@",vc.title,self.currentVC.title);
-    if([vc.title isEqualToString:self.currentVC.title]){
-        if([self.currentVC respondsToSelector:@selector(navigationShouldPopOnBackButton)]){
+    if([self.currentVC respondsToSelector:@selector(navigationShouldPopOnBackButton)]){
+        if([vc hash]==[self.currentVC hash]){
             shouldPop = [self.currentVC navigationShouldPopOnBackButton];
-        }
-        if(shouldPop) {
-            dispatch_async(dispatch_get_main_queue(), ^{
+            if(shouldPop){
                 [self popViewControllerAnimated:YES];
-            });
-        } else {
-            for(UIView *subview in [navigationBar subviews]) {
-                if(subview.alpha < 1.) {
-                    [UIView animateWithDuration:.25 animations:^{
-                        subview.alpha = 1.;
-                    }];
+            }else{
+                for(UIView *subview in [navigationBar subviews]) {
+                    if(subview.alpha < 1.) {
+                        [UIView animateWithDuration:.25 animations:^{
+                            subview.alpha = 1.;
+                        }];
+                    }
                 }
             }
+            return shouldPop;
+        }else{
+            return shouldPop;
         }
-        return shouldPop;
     }else{
-        return shouldPop;
+        [self popViewControllerAnimated:YES];
     }
+    return shouldPop;
 }
 
 - (void)navigationBar:(UINavigationBar *)navigationBar didPopItem:(UINavigationItem *)item
